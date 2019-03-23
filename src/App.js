@@ -19,14 +19,17 @@ class App extends Component {
       return (
         <Container>
           <Row>
-              {this.state.itemDropdowns.map(() => (
+              {this.state.itemDropdowns.map((value,index) => (
                 <ItemDropdown
+                  key={index}
+                  domKey={index}
                   items={this.state.items}
                 />
               ))}
             <Col md="12">
               <Button
                 onClick={() => this.addDropdown()}
+                disabled={this.state.itemDropdowns.length == 4}
               >Add</Button>
               <Button
                 onClick={() => this.removeDropdown()}

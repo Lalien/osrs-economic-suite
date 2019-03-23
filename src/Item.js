@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Button, OverlayTrigger, Popover, Image, Alert, Col, Dropdown } from 'react-bootstrap';
-import Controls from './Controls';
-import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official'
-import DropdownToggle from 'react-bootstrap/DropdownToggle';
-import DropdownMenu from 'react-bootstrap/DropdownMenu';
-function updateGraph(data) {
-    this.setState({
-      itemData: data
-    });
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+
+function updateGraph(data,key) {
+    var output = {};
+        output.itemData = {
+            ...this.state.itemData
+        };
+    output.itemData[key] = data
+    this.setState(output);
 }
 
 class ItemDropdownItem extends Component {
@@ -39,11 +40,9 @@ class ItemDropdownItem extends Component {
   
     handleClick() {
       if (!this.props.isSelected) {
-        axios.get('http://localhost:81/api/item-graph-data/' + this.props.information.id).then((data) => updateGraph(data.data)).catch((data) => updateGraph({error: true}));
-        this.props.handler(this.props.information.id);
+        axios.get('http://localhost:81/api/item-graph-data/' + this.props.information.id).then((data) => this.props.handler(this.props.information,data.data)).catch(() => this.props.handler({error: true}));
         return;
       }
-  
       // Remove from graph
       this.props.handler(null);
       return;
@@ -60,23 +59,28 @@ class ItemDropdownItem extends Component {
     constructor(props) {
       super(props);
       this.state = {
-        itemId: null
+        itemId: null,
       };
       updateGraph = updateGraph.bind(this);
     }
+
     render() {
       if (this.state.itemData && !this.state.itemData.error) {
-        const options = {
-          title: {
-            text: this.state.itemData.name
-          },
-          xAxis: {
-            categories: this.state.itemData.daily.headers
-          },
-          series: [{
-            data: this.state.itemData.daily.values
-          }]
+        var options = {
+            series: []
+        //   title: {
+        //     text: this.state.itemData.name
+        //   },
+        //   xAxis: {
+        //     categories: this.state.itemData.daily.headers
+        //   },
+        //   series: [{
+        //     data: this.state.itemData.daily.values
+        //   }]
         }
+        Object.keys(this.state.itemData).forEach((key) => (
+          options.series.push({data: this.state.itemData[key].daily.values})
+        ));
         return (
           <HighchartsReact
           highcharts={Highcharts}
@@ -95,7 +99,7 @@ class ItemDropdownItem extends Component {
     constructor(props) {
       super(props);
       this.state = {
-        selected_item: null,
+        selected_item: {},
       }
       this.handler = this.handler.bind(this);
     }
@@ -105,28 +109,33 @@ class ItemDropdownItem extends Component {
         <Col md="3">
             <Dropdown>
                 <Dropdown.Toggle>
-                    Item
+                    {this.state.selected_item.name || 'No Item Selected'}
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                     {Object.keys(this.props.items).map(item =>(
-                        <ItemDropdownItem information={this.props.items[item]} isSelected={ this.props.items[item].id == this.props.selected_item} handler={this.handler}/>
+                        <ItemDropdownItem 
+                        key={this.props.items[item].id} 
+                        information={this.props.items[item]} 
+                        isSelected={ this.props.items[item].id == this.props.selected_item} 
+                        handler={this.handler}
+                        />
                     ))}
                 </Dropdown.Menu>
             </Dropdown>
         </Col>
       )
     }
-  
-    handler(itemId) {
+
+    handler(item, data) {
       this.setState({
-        selected_item: itemId
+        selected_item: item
       });
+      updateGraph(data,this.props.domKey);
     }
   }
 
-  
-  export {
-      ItemDropdownItem,
-      ItemGraph,
-      ItemDropdown
-  }
+export {
+    ItemDropdownItem,
+    ItemGraph,
+    ItemDropdown
+}
