@@ -69,9 +69,13 @@ class ItemDropdownItem extends Component {
             series: [],
             title: {
                 text: ''
+            },
+            xAxis: {
+              enabled: true,
+              labels: []
             }
         }
-
+        options.xAxis.labels = this.state.itemData[0].daily.headers;
         Object.keys(this.state.itemData).forEach((key) => (
           (this.state.itemData[key] != null) ? options.series.push({data: this.state.itemData[key].daily.values}) : options.series.push({data: null})
         ));
@@ -113,7 +117,7 @@ class ItemDropdownItem extends Component {
             <Menu
               anchorEl={this.state.menuAnchorEl}
               open={Boolean(this.state.menuAnchorEl)}
-              onClose={this.handleMenuClose}
+              onClose={() => this.handleMenuClose()}
               >
               <MenuItem onClick={() => this.handleDropdownDelete()}>Remove</MenuItem>
             </Menu>
@@ -125,7 +129,7 @@ class ItemDropdownItem extends Component {
             <Menu
               anchorEl={this.state.itemAnchorEl}
               open={Boolean(this.state.itemAnchorEl)}
-              onClose={this.handleItemMenuClose}
+              onClose={() => this.handleItemMenuClose()}
               >
               {Object.keys(this.props.items).map(item =>(
                   <ItemDropdownItem 
