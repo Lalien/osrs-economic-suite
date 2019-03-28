@@ -75,7 +75,6 @@ class ItemDropdownItem extends Component {
               labels: []
             }
         }
-        options.xAxis.labels = this.state.itemData[0].daily.headers;
         Object.keys(this.state.itemData).forEach((key) => (
           (this.state.itemData[key] != null) ? options.series.push({data: this.state.itemData[key].daily.values}) : options.series.push({data: null})
         ));
