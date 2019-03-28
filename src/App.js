@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Container, Button, Col, Row } from 'react-bootstrap';
+import { Container, Col, Row } from 'react-bootstrap';
 import {ItemGraph, ItemDropdown} from './Item';
+import { Button as MaterialButton} from '@material-ui/core';
 
 class App extends Component {
   constructor(props) {
@@ -10,12 +11,16 @@ class App extends Component {
       ready: false,
       items: Array(50).fill(null),
       selected_item: null,
-      itemDropdowns: Array(1).fill(null)
+      itemDropdowns: Array(1).fill(false),
+      itemDropdownCount: 1,
     };
+    console.log(this.state.itemDropdownCount);
     axios.get('https://www.osrsbox.com/osrsbox-db/items-complete.json').then((data) => this.setItemData(data.data)).catch(console.error);
   }
+
   render() {
     if (this.state.ready) {
+      console.log(this.state.itemDropdowns);
       return (
         <Container>
           <Row>
@@ -24,17 +29,16 @@ class App extends Component {
                   key={index}
                   domKey={index}
                   items={this.state.items}
+                  handleDropdownDelete={this.handleDropdownDelete.bind(this)}
+                  hide={value}
                 />
               ))}
             <Col md="12">
-              <Button
+              <MaterialButton
                 onClick={() => this.addDropdown()}
-                disabled={this.state.itemDropdowns.length == 4}
-              >Add</Button>
-              <Button
-                onClick={() => this.removeDropdown()}
-                disabled={this.state.itemDropdowns.length == 1}
-              >Remove</Button>
+                disabled={this.state.itemDropdownCount >= 4}
+                color="primary"
+              >Add</MaterialButton>
             </Col>
           </Row>
           <Row>
@@ -48,18 +52,22 @@ class App extends Component {
     return '';
   }
 
-  addDropdown() {
-    this.state.itemDropdowns.push(null);
+  handleDropdownDelete(index) {
+    this.state.itemDropdowns[index] = true;
+    this.state.itemDropdownCount--;
     this.setState({
-      itemDropdowns: this.state.itemDropdowns
-    });
+      itemDropdowns: this.state.itemDropdowns,
+      itemDropdownCount: this.state.itemDropdownCount
+    })
   }
 
-  removeDropdown() {
-    this.state.itemDropdowns.pop();
+  addDropdown() {
+    this.state.itemDropdowns.push(false);
+    this.state.itemDropdownCount++;
     this.setState({
-      itemDropdowns: this.state.itemDropdowns
-    })
+      itemDropdowns: this.state.itemDropdowns,
+      itemDropdownCount: this.state.itemDropdownCount
+    });
   }
 
   setItemData(data) {

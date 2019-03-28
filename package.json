@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^3.9.2",
+    "@material/select": "^1.1.0",
     "axios": "^0.18.0",
     "bootstrap": "^4.3.1",
     "highcharts": "^7.0.3",
@@ -26,5 +28,20 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "main": "index.js",
+  "devDependencies": {
+    "@material-ui/icons": "^3.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lalien/osrs-economic-suite.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lalien/osrs-economic-suite/issues"
+  },
+  "homepage": "https://github.com/Lalien/osrs-economic-suite#readme"
 }
