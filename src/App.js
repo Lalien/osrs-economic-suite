@@ -1,79 +1,46 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import { Container, Col, Row } from 'react-bootstrap';
-import {ItemGraph, ItemDropdown} from './Item';
-import { Button as MaterialButton} from '@material-ui/core';
-
+import GraphUI from './GraphUI';
+import { BottomNavigation, BottomNavigationAction} from '@material-ui/core';
+const style = {
+  bottomNav: {
+    position: 'fixed',
+    bottom: '0'
+  }
+}
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ready: false,
-      items: Array(50).fill(null),
-      selected_item: null,
-      itemDropdowns: Array(1).fill(false),
-      itemDropdownCount: 1,
-    };
-    console.log(this.state.itemDropdownCount);
-    axios.get('https://www.osrsbox.com/osrsbox-db/items-complete.json').then((data) => this.setItemData(data.data)).catch(console.error);
+      showGraph: false
+    } 
   }
-
+  
   render() {
-    if (this.state.ready) {
-      console.log(this.state.itemDropdowns);
-      return (
-        <Container>
-          <Row>
-              {this.state.itemDropdowns.map((value,index) => (
-                <ItemDropdown
-                  key={index}
-                  domKey={index}
-                  items={this.state.items}
-                  handleDropdownDelete={this.handleDropdownDelete.bind(this)}
-                  hide={value}
-                />
-              ))}
-            <Col md="12">
-              <MaterialButton
-                onClick={() => this.addDropdown()}
-                disabled={this.state.itemDropdownCount >= 4}
-                color="primary"
-              >Add</MaterialButton>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12}>
-              <ItemGraph/>       
-            </Col>
-          </Row>
-        </Container>
-      );
-    }
-    return '';
+    return (
+    <div>
+      <GraphUI
+        open={this.state.showGraph}
+        closeGraphHandler = {this.closeGraph.bind(this)}
+      />
+      <BottomNavigation
+        showLabels
+        style={style.bottomNav}
+      >
+        <BottomNavigationAction label="Graph" onClick={() => this.showGraphUI()} />
+        <BottomNavigationAction label="Graph" onClick={() => this.showGraphUI()} />
+      </BottomNavigation>
+    </div>
+    )
   }
-
-  handleDropdownDelete(index) {
-    this.state.itemDropdowns[index] = true;
-    this.state.itemDropdownCount--;
+  showGraphUI() {
     this.setState({
-      itemDropdowns: this.state.itemDropdowns,
-      itemDropdownCount: this.state.itemDropdownCount
-    })
-  }
-
-  addDropdown() {
-    this.state.itemDropdowns.push(false);
-    this.state.itemDropdownCount++;
-    this.setState({
-      itemDropdowns: this.state.itemDropdowns,
-      itemDropdownCount: this.state.itemDropdownCount
+      showGraph: true
     });
   }
 
-  setItemData(data) {
+  closeGraph() {
     this.setState({
-      ready: true,
-      items: this.state.items.map((value, index) => data[index]),
+      showGraph: false
     });
   }
 }

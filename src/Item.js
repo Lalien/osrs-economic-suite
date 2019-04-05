@@ -1,10 +1,20 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { OverlayTrigger, Popover, Image, Alert, Col, Dropdown } from 'react-bootstrap';
-import {Button, Menu, MenuItem, AppBar} from '@material-ui/core';
+import { Image, Alert } from 'react-bootstrap';
+import {Button, Menu, MenuItem, Grid} from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import DeleteIcon from '@material-ui/icons/Delete';
+
+var style = {
+  font: {
+    fontSize: '10px',
+  },
+  img_thumbnail: {
+    width: '20px'
+  }
+};
 
 function updateGraph(data,key) {
     var output = {};
@@ -18,7 +28,6 @@ function updateGraph(data,key) {
     }
     this.setState(output);
 }
-
 class ItemDropdownItem extends Component {
     constructor(props) {
       super(props);
@@ -107,24 +116,20 @@ class ItemDropdownItem extends Component {
     render() {
       if (!this.props.hide) {
         return(
-          <Col md="3">
-            <Button
-            onClick={this.handleMenuToggle}
-            >
-              <MoreVertIcon/>
-            </Button>
-            <Menu
-              anchorEl={this.state.menuAnchorEl}
-              open={Boolean(this.state.menuAnchorEl)}
-              onClose={() => this.handleMenuClose()}
-              >
-              <MenuItem onClick={() => this.handleDropdownDelete()}>Remove</MenuItem>
-            </Menu>
+          <Grid item lg={3}>
+            <Image
+              style={style.img_thumbnail}
+              src={this.state.selected_item.id ? `https://www.osrsbox.com/osrsbox-db/items-icons/${this.state.selected_item.id}.png` : ``}
+            />
             <Button
               onClick={this.handleItemMenuDropdownToggle}
+              style={style.font}
               >
-              {this.state.selected_item.name || 'no item selected'}
+              {this.state.selected_item.name || 'None'}
             </Button>
+            <Button
+              onClick={() => this.handleDropdownDelete()}
+              ><DeleteIcon/></Button>
             <Menu
               anchorEl={this.state.itemAnchorEl}
               open={Boolean(this.state.itemAnchorEl)}
@@ -140,8 +145,8 @@ class ItemDropdownItem extends Component {
                   />
               ))}
             </Menu>
-          </Col>
-        )
+          </Grid>
+        );
       }
       return '';
     }
